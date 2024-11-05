@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Modules\Core\Transformers\PaginationResource;
+use App\Http\Resources\PaginationResource;
 use App\Http\Requests\Product\CreateAttributeRequest;
 use App\Services\Product\CategoryAttributeService;
-use App\Transformers\CategoryAttributeResource;
+use App\Http\Resources\CategoryAttributeResource;
 
 class CategoryAttributeController extends BaseController
 {

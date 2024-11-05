@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Modules\Core\Transformers\PaginationResource;
+use App\Http\Resources\PaginationResource;
 use App\Http\Requests\Product\CreateCategoryRequest;
 use App\Http\Requests\Product\UpdateCategoryRequest;
 use App\Services\Product\CategoryService;
-use App\Transformers\CategoryResource;
+use App\Http\Resources\CategoryResource;
 
 class CategoryController extends BaseController
 {
