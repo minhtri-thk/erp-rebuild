@@ -11,7 +11,8 @@ use App\Traits\SpatieLogsActivity;
 
 class Category extends BaseModel
 {
-    use SpatieLogsActivity, SoftDeletes;
+    use SpatieLogsActivity;
+    use SoftDeletes;
 
     protected $table = 'categories';
 
@@ -24,6 +25,15 @@ class Category extends BaseModel
         'description'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'deleted_at',
+        'deleted_by',
+    ];
+
     /**
      * Attributes HasMany
      *
@@ -33,4 +43,14 @@ class Category extends BaseModel
     {
         return $this->hasMany(CategoryAttribute::class);
     }
+    
+    // /**
+    //  * products
+    //  *
+    //  * @return HasMany
+    //  */
+    // public function products(): HasMany
+    // {
+    //     return $this->hasMany(Product::class, 'category_id', 'id');
+    // }
 }

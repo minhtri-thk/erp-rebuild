@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Product;
+namespace App\Http\Requests\Products;
 
 use App\Http\Requests\BaseApiRequest;
 
-class CreateOptionRequest extends BaseApiRequest
+class CreateAttributeRequest extends BaseApiRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -12,8 +12,14 @@ class CreateOptionRequest extends BaseApiRequest
     public function rules(): array
     {
         return [
-            'value' => [
-                'required'
+            'name' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'data_type' => [
+                'required',
+                'integer'
             ]
         ];
     }

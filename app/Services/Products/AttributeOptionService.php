@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Product;
+namespace App\Services\Products;
 
 use App\Repositories\AttributeOption\AttributeOptionRepositoryInterface;
 use App\Repositories\CategoryAttribute\CategoryAttributeRepositoryInterface;
