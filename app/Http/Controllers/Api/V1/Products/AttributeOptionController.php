@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use App\Http\Requests\Product\CreateOptionRequest;
 use App\Http\Resources\PaginationResource;
+use App\Http\Requests\Products\CreateOptionRequest;
 use App\Services\Products\AttributeOptionService;
+use App\Http\Resources\AttributeOptionResource;
 
 class AttributeOptionController extends BaseController
 {
