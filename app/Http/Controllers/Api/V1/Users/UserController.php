@@ -1,24 +1,31 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Permissions;
+namespace App\Http\Controllers\Api\V1\Users;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\Permissions\CreateRequest;
-use App\Http\Requests\Permissions\UpdateRequest;
-use App\Http\Resources\PaginationResource;
-use App\Http\Resources\PermissionResource;
-use App\Services\Permissions\PermissionService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\Users\UpdateRequest;
+use App\Services\Users\UserService;
+use App\Http\Resources\PaginationResource;
+use App\Http\Resources\UserProfileResource;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 
-class PermissionController extends BaseController implements HasMiddleware
+class UserController extends BaseController implements HasMiddleware
 {
+    private $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      *  Get the middleware that should be assigned to the controller.
      *
@@ -27,11 +34,12 @@ class PermissionController extends BaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware(PermissionMiddleware::using('permission-list'), only: ['index']),
-            new Middleware(PermissionMiddleware::using('permission-store'), only: ['store']),
-            new Middleware(PermissionMiddleware::using('permission-show'), only: ['show']),
-            new Middleware(PermissionMiddleware::using('permission-update'), only: ['update']),
-            new Middleware(PermissionMiddleware::using('permission-delete'), only: ['destroy']),
+            new Middleware(PermissionMiddleware::using('user-list'), only: ['index']),
+            new Middleware(PermissionMiddleware::using('user-store'), only: ['store']),
+            new Middleware(PermissionMiddleware::using('user-show'), only: ['show']),
+            new Middleware(PermissionMiddleware::using('user-update'), only: ['update']),
+            new Middleware(PermissionMiddleware::using('user-delete'), only: ['destroy']),
+            // new Middleware(PermissionMiddleware::using('user-profile'), only: ['profile']),
         ];
     }
 
@@ -41,8 +49,8 @@ class PermissionController extends BaseController implements HasMiddleware
     public function index(Request $request)
     {
         try {
-            $permisions = App::make(PermissionService::class)->getListPermission($request);
-            $results = new PaginationResource(PermissionResource::collection($permisions));
+            $users = $this->userService->getListUser($request);
+            $results = new PaginationResource(UserProfileResource::collection($users));
             return $this->sendResponse(__(self::MSG_RETRIEVED), $results, Response::HTTP_OK);
         } catch (\Throwable $th) {
             Log::error($th->getMessage() . ' - Line:' . $th->getLine());
@@ -53,13 +61,13 @@ class PermissionController extends BaseController implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateRequest $request)
+    public function store(RegisterRequest $request)
     {
         DB::beginTransaction();
         try {
-            $permission = App::make(PermissionService::class)->createPermission($request);
+            $user = $this->userService->createUserWithProfile($request->input());
             DB::commit();
-            return $this->sendResponse(__(self::MSG_CREATED), $permission, Response::HTTP_CREATED);
+            return $this->sendResponse(__(self::MSG_CREATED), $user, Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error($th->getMessage() . ' - Line:' . $th->getLine());
@@ -70,14 +78,14 @@ class PermissionController extends BaseController implements HasMiddleware
     /**
      * Show the specified resource.
      */
-    public function show($id)
+    public function show($uuid)
     {
         try {
-            $permission = App::make(PermissionService::class)->showPermission($id);
-            if ($permission) {
-                return $this->sendResponse(__(self::MSG_RETRIEVED), $permission);
+            $user = $this->userService->getUserByUuid($uuid);
+            if ($user) {
+                $result = new UserProfileResource($user);
+                return $this->sendResponse(__(self::MSG_RETRIEVED), $result, Response::HTTP_OK);
             }
-
             return $this->sendError(__(self::MSG_NOT_FOUND), [], Response::HTTP_NOT_FOUND);
         } catch (\Throwable $th) {
             Log::error($th->getMessage() . ' - Line:' . $th->getLine());
@@ -88,14 +96,14 @@ class PermissionController extends BaseController implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, $id)
+    public function update(UpdateRequest $request, $uuid)
     {
         DB::beginTransaction();
         try {
-            $permission = App::make(PermissionService::class)->updatePermission($id, $request);
-            if ($permission) {
+            $user = $this->userService->updateUserWithProfile($uuid, $request->input());
+            if ($user) {
                 DB::commit();
-                return $this->sendResponse(__(self::MSG_UPDATED), $permission);
+                return $this->sendResponse(__(self::MSG_UPDATED), $user, Response::HTTP_OK);
             }
             return $this->sendError(__(self::MSG_NOT_FOUND), [], Response::HTTP_NOT_FOUND);
         } catch (\Throwable $th) {
@@ -108,15 +116,29 @@ class PermissionController extends BaseController implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($uuid)
     {
         DB::beginTransaction();
         try {
-            App::make(PermissionService::class)->deletePermission($id);
+            $this->userService->deleteUserByUuid($uuid);
             DB::commit();
-            return $this->sendResponse(__(self::MSG_DELETED), [], Response::HTTP_NO_CONTENT);
+            return $this->sendResponse(__(self::MSG_DELETED), [], Response::HTTP_OK);
         } catch (\Throwable $th) {
             DB::rollBack();
+            Log::error($th->getMessage() . ' - Line:' . $th->getLine());
+            return $this->sendError(__(self::MSG_ERROR), [], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Show profile
+     */
+    public function profile()
+    {
+        try {
+            $result = new UserProfileResource(Auth::user());
+            return $this->sendResponse(__(self::MSG_RETRIEVED), $result, Response::HTTP_OK);
+        } catch (\Throwable $th) {
             Log::error($th->getMessage() . ' - Line:' . $th->getLine());
             return $this->sendError(__(self::MSG_ERROR), [], Response::HTTP_BAD_REQUEST);
         }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\ActivityLogs;
 
 use App\Http\Controllers\BaseController;
-use App\Services\ActivityLog\ActivityLogService;
+use App\Services\ActivityLogs\ActivityLogService;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\App;
@@ -20,7 +20,7 @@ class ActivityLogController extends BaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware(PermissionMiddleware::using('core::activity_log-list'), only: ['list']),
+            new Middleware(PermissionMiddleware::using('activity_log-list'), only: ['list']),
         ];
     }
 

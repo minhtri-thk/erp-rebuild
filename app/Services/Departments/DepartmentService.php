@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Departments;
 
 use Illuminate\Http\Request;
-use App\Repositories\DepartmentRepositoryInterface;
-use App\Repositories\Eloquent\DepartmentRepository;
+use App\Repositories\Departments\DepartmentRepositoryInterface;
 
 class DepartmentService
 {

@@ -16,9 +16,20 @@ use App\Models\UserProfile;
 use App\Models\Department;
 use App\Traits\ScopeEloquent;
 use App\Traits\SpatieLogsActivity;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory;
+    use Notifiable;
+    use HasApiTokens;
+    use HasRoles;
+    use HasPermissions;
     use SoftDeletes;
     use SpatieLogsActivity;
     use ScopeEloquent;

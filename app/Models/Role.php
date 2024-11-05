@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Artisan;
-use Modules\Core\Traits\ScopeEloquent;
+use App\Traits\ScopeEloquent;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class Role extends ModelsRole

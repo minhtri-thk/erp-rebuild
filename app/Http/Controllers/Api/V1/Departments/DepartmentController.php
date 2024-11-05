@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Departments\DepartmentRequest;
 use App\Http\Resources\PaginationResource;
-use App\Services\DepartmentService;
+use App\Services\Departments\DepartmentService;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 
 class DepartmentController extends BaseController
@@ -19,11 +19,11 @@ class DepartmentController extends BaseController
     public static function middleware(): array
     {
         return [
-            new Middleware(PermissionMiddleware::using('core::department-list'), only: ['index']),
-            new Middleware(PermissionMiddleware::using('core::department-store'), only: ['store']),
-            new Middleware(PermissionMiddleware::using('core::department-show'), only: ['show']),
-            new Middleware(PermissionMiddleware::using('core::department-update'), only: ['update']),
-            new Middleware(PermissionMiddleware::using('core::department-delete'), only: ['destroy']),
+            new Middleware(PermissionMiddleware::using('department-list'), only: ['index']),
+            new Middleware(PermissionMiddleware::using('department-store'), only: ['store']),
+            new Middleware(PermissionMiddleware::using('department-show'), only: ['show']),
+            new Middleware(PermissionMiddleware::using('department-update'), only: ['update']),
+            new Middleware(PermissionMiddleware::using('department-delete'), only: ['destroy']),
         ];
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\ActivityLog;
+namespace App\Services\ActivityLogs;
 
 use App\Models\ActivityLog;
 
